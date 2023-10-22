@@ -34,7 +34,9 @@ int main(int argc, char** argv) {
 	}
 	if (filename != NULL && query != NULL) {
 		FILE* file = fopen(filename, "r");
-		if (!file) FILE* file = fopen(filename, "w");
+		if (!file) {
+			FILE* file = fopen(filename, "w");
+		}
 		int pos1 = 0;;
 		int pos2 = 0;;
 		int status = 0;;
