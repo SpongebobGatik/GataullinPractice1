@@ -1,9 +1,19 @@
 #ifndef SET_H
 #define SET_H
 
-typedef struct {
-	char** elements;
-	int size; 
+typedef struct Node {
+    char* element;
+    int hash;
+    struct Node* next;
+    struct Node* prev;
+} Node;
+
+typedef struct Set {
+    Node* head;
+    int size;
+    Node** hashTable;
+    int tableSize;
+    int* emptySlots;
 } Set;
 
 Set* initSet();

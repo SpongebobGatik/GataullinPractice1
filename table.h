@@ -1,15 +1,23 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-typedef struct {
-    char** keys;
-    char** values;
+typedef struct NodeHashTable {
+    char* element;
+    int hash;
+    struct NodeHashTable* next;
+    struct NodeHashTable* prev;
+} NodeHashTable;
+
+typedef struct HashTable {
+    NodeHashTable* head;
     int size;
+    NodeHashTable** hashTable;
+    int tableSize;
+    int* emptySlots;
+    char** keys;
 } HashTable;
 
 HashTable* initHashTable();
-
-unsigned int hash(const char* key);
 
 void HSET(HashTable* hashtable, char* key, char* value);
 

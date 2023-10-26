@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
 			}
 			else {
 				HSET(hashtable, item, key);
-				printf("-> %s %s\n", item, key);
+				printf("-> %s %s\n", key, item);
 				if (status == 1) status = 0;
 				fclose(file);
 				saveToFileTable(hashtable, filename, basename, &pos1, &pos2, &status);

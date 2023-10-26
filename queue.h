@@ -1,9 +1,14 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-typedef struct {
-	char** elements; 
-	int size; 
+typedef struct NodeQueue {
+    char* element;
+    struct NodeQueue* next;
+} NodeQueue;
+
+typedef struct Queue {
+    NodeQueue* front;
+    NodeQueue* rear;
 } Queue;
 
 Queue* initQueue();

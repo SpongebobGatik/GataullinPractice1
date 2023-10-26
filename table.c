@@ -6,64 +6,81 @@
 #define MAX_SIZE 1000 
 
 HashTable* initHashTable() {
-	HashTable* hashtable = (HashTable*)malloc(sizeof(HashTable));
-	hashtable->keys = (char**)malloc(MAX_SIZE * sizeof(char*));
-	hashtable->values = (char**)malloc(MAX_SIZE * sizeof(char*));
-	hashtable->size = 0;
-	return hashtable;
-}
-
-unsigned int hash(const char* key) {
-	unsigned int h = 0;
-	for (int i = 0; key[i] != '\0'; i++) {
-		h = 31 * h + key[i];
+	HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+	ht->head = NULL;
+	ht->size = 0;
+	ht->tableSize = MAX_SIZE;
+	ht->hashTable = (NodeHashTable**)malloc(MAX_SIZE * sizeof(NodeHashTable*));
+	ht->emptySlots = (int*)malloc(MAX_SIZE * sizeof(int));
+	ht->keys = (char**)malloc(MAX_SIZE * sizeof(char*));
+	for (int i = 0; i < MAX_SIZE; i++) {
+		ht->hashTable[i] = NULL;
+		ht->emptySlots[i] = 1;
+		ht->keys[i] = NULL;
 	}
-	return h % MAX_SIZE;
+	return ht;
 }
 
-void HSET(HashTable* hashtable, char* key, char* value) {
-	
-	if (hashtable->size >= MAX_SIZE) {
-		printf("’еш-таблица полна\n");
+int calculateHashT(const char* element) {
+	int hash = 0;
+	for (int i = 0; element[i] != '\0'; i++) {
+		hash = 31 * hash + element[i];
+	}
+	return hash % MAX_SIZE;
+}
+
+void HSET(HashTable* ht, char* key, char* value) {
+	int hash = calculateHashT(key) % ht->tableSize;
+	if (ht->hashTable[hash] != NULL) {
+		printf(" люч уже существует в хеш-таблице\n");
 		return;
 	}
-
-	for (int i = 0; i < hashtable->size; i++) {
-		if (strcmp(hashtable->keys[i], key) == 0) {
-			printf("Ёлемент уже существует в хеш-таблице\n");
-			return;
-		}
+	NodeHashTable* newNode = (NodeHashTable*)malloc(sizeof(NodeHashTable));
+	newNode->element = _strdup(value);
+	newNode->hash = hash;
+	newNode->next = ht->head;
+	if (ht->head != NULL) {
+		ht->head->prev = newNode;
 	}
-
-	hashtable->keys[hashtable->size] = _strdup(key);
-	hashtable->values[hashtable->size] = _strdup(value);
-	hashtable->size++;
+	ht->head = newNode;
+	ht->hashTable[hash] = newNode;
+	ht->size++;
+	ht->keys[ht->size - 1] = _strdup(key);
 }
 
-void HDEL(HashTable* hashtable, char* key) {
-	for (int i = 0; i < hashtable->size; i++) {
-		if (strcmp(hashtable->keys[i], key) == 0) {
-			free(hashtable->keys[i]);
-			free(hashtable->values[i]);
-			hashtable->keys[i] = hashtable->keys[hashtable->size - 1];
-			hashtable->values[i] = hashtable->values[hashtable->size - 1];
-			hashtable->size--;
-			return;
-		}
-	}
-	printf("Ёлемент не найден в хеш-таблице\n");
-}
-
-char* HGET(HashTable* hashtable, char* key) {
-	for (int i = 0; i < hashtable->size; i++) {
-		if (strcmp(hashtable->keys[i], key) == 0) {
-			return hashtable->values[i];
-		}
+char* HGET(HashTable* ht, const char* key) {
+	if (ht->hashTable[calculateHashT(key)] != NULL) {
+		return ht->hashTable[calculateHashT(key)]->element;
 	}
 	return NULL;
 }
 
-void saveToFileTable(HashTable* hashtable, const char* filename, const char* basename, int *pos1, int *pos2, int *status) {
+void HDEL(HashTable* ht, const char* key) {
+	if (ht->hashTable[calculateHashT(key)] != NULL) {
+		NodeHashTable* nodeToRemove = ht->hashTable[calculateHashT(key)];
+		if (nodeToRemove == ht->head) {
+			ht->head = nodeToRemove->next;
+		}
+		else {
+			if (nodeToRemove->prev != NULL) {
+				nodeToRemove->prev->next = nodeToRemove->next;
+			}
+		}
+		if (nodeToRemove->next != NULL) {
+			nodeToRemove->next->prev = nodeToRemove->prev;
+		}
+		free(nodeToRemove->element);
+		free(nodeToRemove);
+		ht->hashTable[calculateHashT(key)] = NULL;
+		ht->size--;
+		return;
+	}
+
+	printf(" люч не найден в хеш-таблице\n");
+}
+
+
+void saveToFileTable(HashTable* hashtable, const char* filename, const char* basename, int* pos1, int* pos2, int* status) {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
 		printf("ќшибка при открытии файла\n");
@@ -80,11 +97,17 @@ void saveToFileTable(HashTable* hashtable, const char* filename, const char* bas
 	fseek(tempFile, 0, SEEK_SET);
 	while ((ch = fgetc(file)) != EOF) {
 		fputc(ch, tempFile);
-		if (ftell(tempFile) == *pos1 - 2 && *status == 2) fprintf(tempFile, "\t%s\t%s", hashtable->keys[0], hashtable->values[0]);
+		if (ftell(tempFile) == *pos1 - 2 && *status == 2) {
+			fprintf(tempFile, "\t%s\t%s", hashtable->hashTable[calculateHashT(hashtable->keys[0])]->element, hashtable->keys[0]);
+		}
 		else if (ftell(tempFile) == *pos1) {
-			for (int i = 0; i <= hashtable->size - 1; i++) {
-				if (i == hashtable->size - 1) fprintf(tempFile, "%s\t%s\n", hashtable->keys[i], hashtable->values[i]);
-				else fprintf(tempFile, "%s\t%s\t", hashtable->keys[i], hashtable->values[i]);
+			for (int i = 0; i < hashtable->size; i++) {
+				if (i == hashtable->size - 1) {
+					fprintf(tempFile, "%s\t%s\n", hashtable->hashTable[calculateHashT(hashtable->keys[i])]->element, hashtable->keys[i]);
+				}
+				else {
+					fprintf(tempFile, "%s\t%s\t", hashtable->hashTable[calculateHashT(hashtable->keys[i])]->element, hashtable->keys[i]);
+				}
 			}
 			if (*status == 1) {
 				fseek(tempFile, *pos1 - 1, SEEK_SET);
@@ -93,7 +116,10 @@ void saveToFileTable(HashTable* hashtable, const char* filename, const char* bas
 			fseek(file, *pos2, SEEK_SET);
 		}
 	}
-
+	free(hashtable->hashTable);
+	free(hashtable->emptySlots);
+	free(hashtable->keys);
+	free(hashtable);
 	fclose(file);
 	fclose(tempFile);
 	remove(filename);
@@ -139,8 +165,8 @@ HashTable* loadFromFileTable(const char* filename, const char* basename, int *po
 	if (temp1 == temp2) *status = 1;
 	if (temp1 == temp2 + 1) *status = 2;
 	while (temp1 < temp2) {
-		char* key = line[temp1];
-		char* value = line[temp1+1];
+		char* value = line[temp1];
+		char* key = line[temp1+1];
 		HSET(hashtable, key, value);
 		temp1 += 2;
 		if (temp1 == temp2) printf("\nѕоследний элемент возможно был удалЄн, так как он без ключа!\n");
