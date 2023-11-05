@@ -1,5 +1,4 @@
-﻿  main.c
-  queue.c
+﻿  queue.c
 C:\Users\Ms_Hlopets\source\repos\Project6\queue.c(106,28): warning C4267: функция: преобразование из "size_t" в "long"; возможна потеря данных
   set.c
 C:\Users\Ms_Hlopets\source\repos\Project6\set.c(48,33): warning C4028: формальный параметр 2 отличается от объявления
@@ -7,9 +6,5 @@ C:\Users\Ms_Hlopets\source\repos\Project6\set.c(72,37): warning C4028: форм�
 C:\Users\Ms_Hlopets\source\repos\Project6\set.c(151,28): warning C4267: функция: преобразование из "size_t" в "long"; возможна потеря данных
   stack.c
 C:\Users\Ms_Hlopets\source\repos\Project6\stack.c(102,29): warning C4267: функция: преобразование из "size_t" в "long"; возможна потеря данных
-  table.c
-C:\Users\Ms_Hlopets\source\repos\Project6\table.c(51,39): warning C4028: формальный параметр 2 отличается от объявления
-C:\Users\Ms_Hlopets\source\repos\Project6\table.c(58,38): warning C4028: формальный параметр 2 отличается от объявления
-C:\Users\Ms_Hlopets\source\repos\Project6\table.c(152,12): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
   Создание кода...
   Project6.vcxproj -> C:\Users\Ms_Hlopets\source\repos\Project6\x64\Debug\Project6.exe

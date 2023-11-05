@@ -121,7 +121,6 @@ Queue* loadFromFileQueue(const char* filename, const char* basename, int* pos1, 
         if (feof(file))
             break;
     }
-    printf("\n%d %d\n", *pos1, *pos2);
     if (count > 1)
         printf("\nТаких баз данных несколько, операции выполняются с последней!\n");
     if (temp1 == temp2)
