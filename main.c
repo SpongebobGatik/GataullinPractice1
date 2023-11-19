@@ -7,7 +7,6 @@
 #include "set.h"
 #include "queue.h"
 #include "table.h"
-#define MAX_SIZE 1000 // максимальный размер стека 
 
 int main(int argc, char** argv) {
 	setlocale(LC_ALL, "Russian");
@@ -17,6 +16,10 @@ int main(int argc, char** argv) {
 	char* basename = NULL;
 	char* key = NULL;
 	int temp;
+	if (argc < 5 || argc > 8) {
+		printf("Неверное количество аргументов.\n");
+		return 1;
+	}
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--file") == 0 && i + 1 < argc) {
 			filename = argv[i + 1];
@@ -25,10 +28,14 @@ int main(int argc, char** argv) {
 			query = argv[i + 1];
 			temp = i + 1;
 			basename = argv[i + 2];
-			if (i + 5 > argc) item = argv[i + 3];
+			if (i + 5 > argc) key = argv[i + 3];
 			else {
 				key = argv[i + 3];
 				item = argv[i + 4];
+				if (key == NULL || item == NULL) {
+					printf("Ключ или Объект не введены.\n");
+					return 1;
+				}
 			}
 		}
 	}
@@ -41,14 +48,18 @@ int main(int argc, char** argv) {
 		int pos2 = 0;;
 		int status = 0;;
 		if (strcmp(argv[temp], "SPUSH") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			Stack* stack = loadFromFileStack(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				SPUSH(stack, item);
-				printf("-> %s\n", item);
+				SPUSH(stack, key);
+				printf("-> %s\n", key);
 				if (status == 1) status = 0;
 				fclose(file);
 				saveToFileStack(stack, filename, basename, &pos1, &pos2, &status);
@@ -69,54 +80,70 @@ int main(int argc, char** argv) {
 			}
 		}
 		if (strcmp(argv[temp], "SADD") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			Set* set = loadFromFileSet(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				SADD(set, item);
-				printf("-> %s\n", item);
+				SADD(set, key);
+				printf("-> %s\n", key);
 				if (status == 1) status = 0;
 				fclose(file);
 				saveToFileSet(set, filename, basename, &pos1, &pos2, &status);
 			}
 		}
 		if (strcmp(argv[temp], "SREM") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			Set* set = loadFromFileSet(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				SREM(set, item);
-				printf("-> %s\n", item);
+				SREM(set, key);
+				printf("-> %s\n", key);
 				if (status == 2) status = 0;
 				fclose(file);
 				saveToFileSet(set, filename, basename, &pos1, &pos2, &status);
 			}
 		}
 		if (strcmp(argv[temp], "SISMEMBER") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			Set* set = loadFromFileSet(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				if (SISMEMBER(set, item)) printf("-> True\n");
+				if (SISMEMBER(set, key)) printf("-> True\n");
 				else printf("-> False\n");
 				fclose(file);
 			}
 		}
 		if (strcmp(argv[temp], "QPUSH") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			Queue* queue = loadFromFileQueue(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				QPUSH(queue, item);
-				printf("-> %s\n", item);
+				QPUSH(queue, key);
+				printf("-> %s\n", key);
 				if (status == 1) status = 0;
 				fclose(file);
 				saveToFileQueue(queue, filename, basename, &pos1, &pos2, &status);
@@ -137,41 +164,53 @@ int main(int argc, char** argv) {
 			}
 		}
 		if (strcmp(argv[temp], "HSET") == 0) {
+			if (key == NULL || item == NULL) {
+				printf("Ключ или Объект не введены.\n");
+				return 1;
+			}
 			HashTable* hashtable = loadFromFileTable(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				HSET(hashtable, item, key);
-				printf("-> %s %s\n", key, item);
+				HSET(hashtable, key, item);
+				printf("-> %s %s\n", item, key);
 				if (status == 1) status = 0;
 				fclose(file);
 				saveToFileTable(hashtable, filename, basename, &pos1, &pos2, &status);
 			}
 		}
 		if (strcmp(argv[temp], "HDEL") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			HashTable* hashtable = loadFromFileTable(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				HDEL(hashtable, item);
-				printf("-> %s\n", item);
+				HDEL(hashtable, key);
+				printf("-> %s\n", key);
 				if (status == 2) status = 0;
 				fclose(file);
 				saveToFileTable(hashtable, filename, basename, &pos1, &pos2, &status);
 			}
 		}
 		if (strcmp(argv[temp], "HGET") == 0) {
+			if (key == NULL) {
+				printf("Объект не введён.\n");
+				return 1;
+			}
 			HashTable* hashtable = loadFromFileTable(filename, basename, &pos1, &pos2, &status);
 			if (pos1 + pos2 == 0) {
 				printf("Такой базы данных, увы, нет!\n");
 				fclose(file);
 			}
 			else {
-				if (HGET(hashtable, item) != NULL) printf("-> True\n");
+				if (HGET(hashtable, key) != NULL) printf("-> True\n");
 				else printf("-> False\n");
 				fclose(file);
 			}

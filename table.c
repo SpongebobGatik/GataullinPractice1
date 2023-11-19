@@ -3,7 +3,18 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
-#define MAX_SIZE 1000 
+#define MAX_SIZE 100000 
+
+int countWordsInFileTable(const char* filename) {
+	FILE* file = fopen(filename, "r");
+	int count = 0;
+	char word[10000];
+	while (fscanf(file, "%s", word) != EOF) {
+		count++;
+	}
+	fclose(file);
+	return count;
+}
 
 HashTable* initHashTable() {
 	HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
@@ -11,26 +22,25 @@ HashTable* initHashTable() {
 	ht->size = 0;
 	ht->tableSize = MAX_SIZE;
 	ht->hashTable = (NodeHashTable**)malloc(MAX_SIZE * sizeof(NodeHashTable*));
-	ht->emptySlots = (int*)malloc(MAX_SIZE * sizeof(int));
 	ht->keys = (char**)malloc(MAX_SIZE * sizeof(char*));
 	for (int i = 0; i < MAX_SIZE; i++) {
 		ht->hashTable[i] = NULL;
-		ht->emptySlots[i] = 1;
 		ht->keys[i] = NULL;
 	}
 	return ht;
 }
+
 
 int calculateHashT(const char* element) {
 	int hash = 0;
 	for (int i = 0; element[i] != '\0'; i++) {
 		hash = 31 * hash + element[i];
 	}
-	return hash % MAX_SIZE;
+	return abs(hash) % MAX_SIZE;
 }
 
 void HSET(HashTable* ht, char* key, char* value) {
-	int hash = calculateHashT(key) % ht->tableSize;
+	int hash = calculateHashT(key);
 	if (ht->hashTable[hash] != NULL) {
 		printf("Ключ уже существует в хеш-таблице\n");
 		return;
@@ -111,13 +121,13 @@ void saveToFileTable(HashTable* hashtable, const char* filename, const char* bas
 			}
 			if (*status == 1) {
 				fseek(tempFile, *pos1 - 1, SEEK_SET);
+				printf("asd");
 				fprintf(tempFile, "\n");
 			}
 			fseek(file, *pos2, SEEK_SET);
 		}
 	}
 	free(hashtable->hashTable);
-	free(hashtable->emptySlots);
 	free(hashtable->keys);
 	free(hashtable);
 	fclose(file);
@@ -132,15 +142,17 @@ HashTable* loadFromFileTable(const char* filename, const char* basename, int *po
 		printf("Ошибка при открытии файла\n");
 		return NULL;
 	}
+	int num_lines = countWordsInFileTable(filename);
+	char** line = malloc(num_lines * sizeof(char*));
+	for (int i = 0; i < num_lines; i++) line[i] = malloc(10000 * sizeof(char));
 	HashTable* hashtable = initHashTable();
-	char line[1000][1000];
 	int tempory = 0;
 	int tempory2 = 0;
 	int count = 0;
 	int temp1 = 0;
 	int temp2 = 0;
 	char c = '1';
-	for (int i = 0; i < 1000; ++i) {
+	for (int i = 0; i < num_lines; ++i) {
 		fscanf(file, "%s", line[i]);
 		c = getc(file);
 		if (c == '\n') {
@@ -162,7 +174,7 @@ HashTable* loadFromFileTable(const char* filename, const char* basename, int *po
 			break;
 	}
 	if (count > 1) printf("\nТаких баз данных несколько, операции выполняются с последней!\n");
-	if (temp1 == temp2) *status = 1;
+	if (temp1 + 1 == temp2) *status = 1;
 	if (temp1 == temp2 + 1) *status = 2;
 	while (temp1 < temp2) {
 		char* value = line[temp1];
@@ -172,5 +184,9 @@ HashTable* loadFromFileTable(const char* filename, const char* basename, int *po
 		if (temp1 == temp2) printf("\nПоследний элемент возможно был удалён, так как он без ключа!\n");
 	}
 	fclose(file);
+	for (int i = 0; i < num_lines; i++) {
+		free(line[i]);
+	}
+	free(line);
 	return hashtable;
 }
