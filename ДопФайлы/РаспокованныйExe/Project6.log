@@ -1,0 +1,7 @@
+﻿  main.c
+  set.c
+C:\Users\Ms_Hlopets\source\repos\Project6\set.c(59,33): warning C4028: формальный параметр 2 отличается от объявления
+C:\Users\Ms_Hlopets\source\repos\Project6\set.c(83,37): warning C4028: формальный параметр 2 отличается от объявления
+C:\Users\Ms_Hlopets\source\repos\Project6\set.c(164,28): warning C4267: функция: преобразование из "size_t" в "long"; возможна потеря данных
+  Создание кода...
+  Project6.vcxproj -> C:\Users\Ms_Hlopets\source\repos\Project6\x64\Debug\Project6.exe
