@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 				removeNewline(key);
 				removeNewline(item);
 			}
-			if (key == NULL) removeNewline(key);
+			if (key != NULL) removeNewline(key);
 		}
 	}
 	if (filename != NULL && query != NULL) {
