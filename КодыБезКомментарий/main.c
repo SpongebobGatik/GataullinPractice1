@@ -38,20 +38,21 @@ int main(int argc, char** argv) {
 					printf("Ключ или Объект не введены.\n");
 					return 1;
 				}
+				removeNewline(key);
+				removeNewline(item);
 			}
+			if (key == NULL) removeNewline(key);
 		}
 	}
 	if (filename != NULL && query != NULL) {
 		FILE* file = fopen(filename, "r");
 		if (!file) {
-			FILE* file = fopen(filename, "w");
+			printf("Такого файла нет!\n");
 		}
-		removeNewline(key);
-		removeNewline(item);
 		removeNewline(basename);
-		int pos1 = 0;;
-		int pos2 = 0;;
-		int status = 0;;
+		int pos1 = 0;
+		int pos2 = 0;
+		int status = 0;
 		if (strcmp(argv[temp], "SPUSH") == 0) {
 			if (key == NULL) {
 				printf("Объект не введён.\n");

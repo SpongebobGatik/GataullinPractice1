@@ -43,7 +43,10 @@ int main(int argc, char** argv) {
 					printf("Ключ или Объект не введены.\n");
 					return 1;
 				}
+				removeNewline(key);
+				removeNewline(item);
 			}
+			if (key == NULL) removeNewline(key);
 		}
 	}
 	// Проверка наличия имени файла и команды
@@ -53,9 +56,6 @@ int main(int argc, char** argv) {
 		if (!file) {
 			printf("Такого файла нет!\n");
 		}
-		// Удаляем символы новой строки в key, item и basename
-		removeNewline(key);
-		removeNewline(item);
 		removeNewline(basename);
 		int pos1 = 0; // Переменная, отвечающая за позицию начала строки.
 		int pos2 = 0; // Переменная, отвечающая за позицию конца строки.
