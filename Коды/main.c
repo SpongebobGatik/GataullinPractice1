@@ -224,7 +224,7 @@ int main(int argc, char** argv) {
 				fclose(file);
 			}
 			else {
-				if (HGET(hashtable, key) != NULL) printf("-> True\n");
+				if (HGET(hashtable, key) != NULL) printf("%s\n", HGET(hashtable, key));
 				else printf("-> False\n");
 				fclose(file);
 			}

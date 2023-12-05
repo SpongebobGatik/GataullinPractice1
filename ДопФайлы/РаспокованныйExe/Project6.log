@@ -1,2 +1,5 @@
-﻿  main.c
+﻿  table.c
+C:\Users\Ms_Hlopets\Desktop\ПР1\Project6\table.c(79,39): warning C4028: формальный параметр 2 отличается от объявления
+C:\Users\Ms_Hlopets\Desktop\ПР1\Project6\table.c(93,38): warning C4028: формальный параметр 2 отличается от объявления
+C:\Users\Ms_Hlopets\Desktop\ПР1\Project6\table.c(204,12): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
   Project6.vcxproj -> C:\Users\Ms_Hlopets\Desktop\ПР1\Project6\x64\Debug\Project6.exe
