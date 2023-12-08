@@ -55,7 +55,7 @@ int calculateHash2S(const char* element) {
 void SADD(Set* set, char* element) {
     int hash = calculateHashS(element); // Вычисление первого хеша элемента
     int step = calculateHash2S(element); // Вычисление второго хеша элемента
-    // Объединение хешов
+    // Разрешение коллизии посредством двойного хеширования (на step шаг вперёд, если занято)
     while (set->hashTable[hash] != NULL && strcmp(set->hashTable[hash]->element, element) != 0) {
         hash = (hash + step) % MAX_SIZE;
     }
@@ -81,7 +81,7 @@ void SADD(Set* set, char* element) {
 void SREM(Set* set, const char* element) {
     int hash = calculateHashS(element); // Вычисление первого хеша элемента
     int step = calculateHash2S(element); // Вычисление второго хеша элемента
-    // Объединение хешов
+    // Разрешение коллизии посредством двойного хеширования (на step шаг вперёд, если занято)
     while (set->hashTable[hash] != NULL && strcmp(set->hashTable[hash]->element, element) != 0) {
         hash = (hash + step) % MAX_SIZE;
     }
@@ -112,7 +112,7 @@ void SREM(Set* set, const char* element) {
 int SISMEMBER(Set* set, const char* element) {
     int hash = calculateHashS(element); // Вычисление первого хеша элемента
     int step = calculateHash2S(element); // Вычисление второго хеша элемента
-    // Объединение хешов
+    // Разрешение коллизии посредством двойного хеширования (на step шаг вперёд, если занято)
     while (set->hashTable[hash] != NULL && strcmp(set->hashTable[hash]->element, element) != 0) {
         hash = (hash + step) % MAX_SIZE;
     }

@@ -8,7 +8,7 @@
 #include "queue.h"
 #include "table.h"
 
-// Функция удаления символов новой строки \n
+// Функция удаления символов новой строки \n \r
 void removeNewline(char* str);
 
 // Главная функция, принимает аргументы
@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 	char* key = NULL; // Ключ (Объект)
 	int temp; // Переменная, отвечающая за номер аргумента
 	// Проверка количества аргументов
-	if (argc < 5 || argc > 8) {
+	if (argc < 5 || argc > 8 || argv[5] == NULL) {
 		printf("Неверное количество аргументов.\n");
 		return 1;
 	}
@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
 		// Проверка открытия файла
 		if (!file) {
 			printf("Такого файла нет!\n");
+			return 1;
 		}
 		removeNewline(basename);
 		int pos1 = 0; // Переменная, отвечающая за позицию начала строки.
@@ -241,7 +242,12 @@ int main(int argc, char** argv) {
 
 void removeNewline(char* str) {
 	if (str != NULL) {
-		size_t length = strcspn(str, "\n");
-		str[length] = '\0';
+		char* p = str;
+		while (*p) {
+			if (*p == '\n' || *p == '\r') {
+				*p = "";
+			}
+			p++;
+		}
 	}
 }
